@@ -2,7 +2,9 @@ import torch
 from bnn import BinaryBlock
 import math
 from typing import Tuple, List
-from pysat.formula import CNF, Equals, Formula, Atom, IDPool, And, Or, Neg, PYSAT_TRUE, PYSAT_FALSE
+from pysat.formula import (
+    CNF, Equals, Formula, Atom, IDPool, And, Or, Neg, PYSAT_TRUE, PYSAT_FALSE
+)
 from pysat.card import CardEnc
 from pysat.solvers import Glucose3
 
@@ -52,10 +54,13 @@ def get_binary_block_cnf(
             solver.append_formula(CNF(from_clauses=[Formula.literals([y_i])]))
         else:
 
+            ######################################################
+            # sum(x_b with G_m > 0) + sum(x_b with G_m < 0)
             new_ip_vars = [ip_var if w>0 else Neg(ip_var) for ip_var, w in zip(ip_variables, w_i)]
             
             ######################################################
             cnf = get_sequential_counter(new_ip_vars, bound=bound)
+            # If the literals satisfy the condition then output is 1 else it is 0
             cnf = equals(cnf, y_i)
             ######################################################
             
@@ -79,6 +84,8 @@ def get_op_from_solver(f: BinaryBlock, x: List[int]) -> List[int]:
     
     g.solve(assumptions=assumptions)
     model = g.get_model()
+
+    # Translating the output from True/False to 1/-1
     x_output = []
     for x_op in Formula.literals(op_variables):
         for op_var in model:
