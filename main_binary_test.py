@@ -79,6 +79,7 @@ def get_op_from_solver(f: BinaryBlock, x: List[int]) -> List[int]:
 
     get_binary_block_cnf(f, ip_variables, op_variables, g)
 
+    # Fixing the input variables here
     assumptions = [Formula.literals([ip])[0] if x > 0 else Formula.literals([Neg(ip)])[0] 
                for ip, x in zip(ip_variables, x)]
     
